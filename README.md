@@ -1,4 +1,15 @@
 # About
+This project is for adding gmm based recognizers to the vosk api.
+Items planned:
+1. Add access to online-wav-gmm-decode-faster.
+2. Add support for regular expression based LMs. Currently we have a
+   session which maintains state for ongoing recognition in streaming fashion.
+   We need another abstraction where we have a connection within which sessions
+   are included. We can then configure the connection with a specific grammar
+   which is used to build HCLG.fst for that connection. Without this, we either
+   need prebuilt HCLG.fst or build it for each session.
+
+# About Vosk
 
 Vosk is an offline open source speech recognition toolkit. It enables
 speech recognition models for 18 languages and dialects - English, Indian
