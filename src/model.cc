@@ -183,6 +183,8 @@ void Model::ConfigureV2()
     nnet3_decoding_config_.Register(&po);
     endpoint_config_.Register(&po);
     decodable_opts_.Register(&po);
+    gmm_pipeline_config_.Register(&po);
+    gmm_decode_config_.Register(&po);
     po.ReadConfigFile(model_path_str_ + "/conf/model.conf");
 
 

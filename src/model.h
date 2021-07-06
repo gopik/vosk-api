@@ -76,6 +76,9 @@ protected:
     string rnnlm_lm_fst_rxfilename_;
     string rnnlm_lm_rxfilename_;
 
+    kaldi::OnlineFeaturePipelineCommandLineConfig gmm_pipeline_config_;
+    kaldi::OnlineGmmDecodingConfig gmm_decode_config_;
+
     kaldi::OnlineEndpointConfig endpoint_config_;
     kaldi::LatticeFasterDecoderConfig nnet3_decoding_config_;
     kaldi::nnet3::NnetSimpleLoopedComputationOptions decodable_opts_;
