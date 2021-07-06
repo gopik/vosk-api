@@ -9,4 +9,4 @@ class KaldiRecognizerBase {
 	virtual const char* FinalResult() = 0;
 	virtual const char* PartialResult() = 0;
 	virtual void Reset() = 0;
-}
+};

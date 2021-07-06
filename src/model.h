@@ -36,6 +36,7 @@ using namespace kaldi;
 using namespace std;
 
 class KaldiRecognizer;
+class KaldiGmmRecognizer;
 
 class Model {
 
@@ -52,6 +53,7 @@ protected:
     void ReadDataFiles();
 
     friend class KaldiRecognizer;
+    friend class KaldiGmmRecognizer;
 
     string model_path_str_;
     string nnet3_rxfilename_;

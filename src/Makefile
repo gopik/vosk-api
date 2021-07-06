@@ -11,7 +11,9 @@ EXTRA_CFLGAS?=
 EXTRA_LDFLAGS?=
 
 VOSK_SOURCES= \
+    json.cc \
 	kaldi_recognizer.cc \
+    kaldi_gmm_recognizer.cc \
 	language_model.cc \
 	model.cc \
 	spk_model.cc \

@@ -30,6 +30,7 @@
 
 #include "model.h"
 #include "spk_model.h"
+#include "kaldi_recognizer_base.h"
 
 using namespace kaldi;
 
@@ -40,7 +41,7 @@ enum KaldiRecognizerState {
     RECOGNIZER_FINALIZED
 };
 
-class KaldiRecognizer {
+class KaldiRecognizer : KaldiRecognizerBase {
     public:
         KaldiRecognizer(Model *model, float sample_frequency);
         KaldiRecognizer(Model *model, float sample_frequency, SpkModel *spk_model);
