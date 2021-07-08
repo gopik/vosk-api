@@ -217,56 +217,56 @@ void Model::ReadDataFiles()
          " lattice-beam=" << nnet3_decoding_config_.lattice_beam;
     KALDI_LOG << "Silence phones " << endpoint_config_.silence_phones;
 
-    feature_info_.feature_type = "mfcc";
-    ReadConfigFromFile(mfcc_conf_rxfilename_, &feature_info_.mfcc_opts);
-    feature_info_.mfcc_opts.frame_opts.allow_downsample = true; // It is safe to downsample
+    // feature_info_.feature_type = "mfcc";
+    // ReadConfigFromFile(mfcc_conf_rxfilename_, &feature_info_.mfcc_opts);
+    // feature_info_.mfcc_opts.frame_opts.allow_downsample = true; // It is safe to downsample
 
-    feature_info_.silence_weighting_config.silence_weight = 1e-3;
-    feature_info_.silence_weighting_config.silence_phones_str = endpoint_config_.silence_phones;
+    // feature_info_.silence_weighting_config.silence_weight = 1e-3;
+    // feature_info_.silence_weighting_config.silence_phones_str = endpoint_config_.silence_phones;
 
-    trans_model_ = new kaldi::TransitionModel();
-    nnet_ = new kaldi::nnet3::AmNnetSimple();
-    {
-        bool binary;
-        kaldi::Input ki(nnet3_rxfilename_, &binary);
-        trans_model_->Read(ki.Stream(), binary);
-        nnet_->Read(ki.Stream(), binary);
-        SetBatchnormTestMode(true, &(nnet_->GetNnet()));
-        SetDropoutTestMode(true, &(nnet_->GetNnet()));
-        nnet3::CollapseModel(nnet3::CollapseModelConfig(), &(nnet_->GetNnet()));
-    }
-    decodable_info_ = new nnet3::DecodableNnetSimpleLoopedInfo(decodable_opts_,
-                                                               nnet_);
+    // trans_model_ = new kaldi::TransitionModel();
+    // nnet_ = new kaldi::nnet3::AmNnetSimple();
+    // {
+    //     bool binary;
+    //     kaldi::Input ki(nnet3_rxfilename_, &binary);
+    //     trans_model_->Read(ki.Stream(), binary);
+    //     nnet_->Read(ki.Stream(), binary);
+    //     SetBatchnormTestMode(true, &(nnet_->GetNnet()));
+    //     SetDropoutTestMode(true, &(nnet_->GetNnet()));
+    //     nnet3::CollapseModel(nnet3::CollapseModelConfig(), &(nnet_->GetNnet()));
+    // }
+    // decodable_info_ = new nnet3::DecodableNnetSimpleLoopedInfo(decodable_opts_,
+    //                                                            nnet_);
 
-    if (stat(final_ie_rxfilename_.c_str(), &buffer) == 0) {
-        KALDI_LOG << "Loading i-vector extractor from " << final_ie_rxfilename_;
+    // if (stat(final_ie_rxfilename_.c_str(), &buffer) == 0) {
+    //     KALDI_LOG << "Loading i-vector extractor from " << final_ie_rxfilename_;
 
-        OnlineIvectorExtractionConfig ivector_extraction_opts;
-        ivector_extraction_opts.splice_config_rxfilename = model_path_str_ + "/ivector/splice.conf";
-        ivector_extraction_opts.cmvn_config_rxfilename = model_path_str_ + "/ivector/online_cmvn.conf";
-        ivector_extraction_opts.lda_mat_rxfilename = model_path_str_ + "/ivector/final.mat";
-        ivector_extraction_opts.global_cmvn_stats_rxfilename = model_path_str_ + "/ivector/global_cmvn.stats";
-        ivector_extraction_opts.diag_ubm_rxfilename = model_path_str_ + "/ivector/final.dubm";
-        ivector_extraction_opts.ivector_extractor_rxfilename = model_path_str_ + "/ivector/final.ie";
-        ivector_extraction_opts.max_count = 100;
+    //     OnlineIvectorExtractionConfig ivector_extraction_opts;
+    //     ivector_extraction_opts.splice_config_rxfilename = model_path_str_ + "/ivector/splice.conf";
+    //     ivector_extraction_opts.cmvn_config_rxfilename = model_path_str_ + "/ivector/online_cmvn.conf";
+    //     ivector_extraction_opts.lda_mat_rxfilename = model_path_str_ + "/ivector/final.mat";
+    //     ivector_extraction_opts.global_cmvn_stats_rxfilename = model_path_str_ + "/ivector/global_cmvn.stats";
+    //     ivector_extraction_opts.diag_ubm_rxfilename = model_path_str_ + "/ivector/final.dubm";
+    //     ivector_extraction_opts.ivector_extractor_rxfilename = model_path_str_ + "/ivector/final.ie";
+    //     ivector_extraction_opts.max_count = 100;
 
-        feature_info_.use_ivectors = true;
-        feature_info_.ivector_extractor_info.Init(ivector_extraction_opts);
-    } else {
-        feature_info_.use_ivectors = false;
-    }
+    //     feature_info_.use_ivectors = true;
+    //     feature_info_.ivector_extractor_info.Init(ivector_extraction_opts);
+    // } else {
+    //     feature_info_.use_ivectors = false;
+    // }
 
-    if (stat(global_cmvn_stats_rxfilename_.c_str(), &buffer) == 0) {
-        KALDI_LOG << "Reading CMVN stats from " << global_cmvn_stats_rxfilename_;
-        feature_info_.use_cmvn = true;
-        ReadKaldiObject(global_cmvn_stats_rxfilename_, &feature_info_.global_cmvn_stats);
-    }
+    // if (stat(global_cmvn_stats_rxfilename_.c_str(), &buffer) == 0) {
+    //     KALDI_LOG << "Reading CMVN stats from " << global_cmvn_stats_rxfilename_;
+    //     feature_info_.use_cmvn = true;
+    //     ReadKaldiObject(global_cmvn_stats_rxfilename_, &feature_info_.global_cmvn_stats);
+    // }
 
-    if (stat(pitch_conf_rxfilename_.c_str(), &buffer) == 0) {
-        KALDI_LOG << "Using pitch in feature pipeline";
-        feature_info_.add_pitch = true;
-        ReadConfigFromFile(pitch_conf_rxfilename_, &feature_info_.pitch_opts);
-    }
+    // if (stat(pitch_conf_rxfilename_.c_str(), &buffer) == 0) {
+    //     KALDI_LOG << "Using pitch in feature pipeline";
+    //     feature_info_.add_pitch = true;
+    //     ReadConfigFromFile(pitch_conf_rxfilename_, &feature_info_.pitch_opts);
+    // }
 
     if (stat(hclg_fst_rxfilename_.c_str(), &buffer) == 0) {
         KALDI_LOG << "Loading HCLG from " << hclg_fst_rxfilename_;
@@ -298,40 +298,42 @@ void Model::ReadDataFiles()
         winfo_ = new kaldi::WordBoundaryInfo(opts, winfo_rxfilename_);
     }
 
+    KALDI_LOG << "Loaded winfo";
+
     // RNNLM Rescoring
-    if (stat(rnnlm_lm_rxfilename_.c_str(), &buffer) == 0) {
-        KALDI_LOG << "Loading RNNLM model from " << rnnlm_lm_rxfilename_;
+    // if (stat(rnnlm_lm_rxfilename_.c_str(), &buffer) == 0) {
+    //     KALDI_LOG << "Loading RNNLM model from " << rnnlm_lm_rxfilename_;
 
-        ReadKaldiObject(rnnlm_lm_rxfilename_, &rnnlm);
-        rnnlm_lm_fst_ = fst::ReadAndPrepareLmFst(rnnlm_lm_fst_rxfilename_);
-        Matrix<BaseFloat> feature_embedding_mat;
-        ReadKaldiObject(rnnlm_feat_embedding_rxfilename_, &feature_embedding_mat);
-        SparseMatrix<BaseFloat> word_feature_mat;
-        {
-           Input input(rnnlm_word_feats_rxfilename_);
-           int32 feature_dim = feature_embedding_mat.NumRows();
-           rnnlm::ReadSparseWordFeatures(input.Stream(), feature_dim,
-                             &word_feature_mat);
-        }
-        Matrix<BaseFloat> wm(word_feature_mat.NumRows(), feature_embedding_mat.NumCols());
-        wm.AddSmatMat(1.0, word_feature_mat, kNoTrans,
-                      feature_embedding_mat, 0.0);
-        word_embedding_mat.Resize(wm.NumRows(), wm.NumCols(), kUndefined);
-        word_embedding_mat.CopyFromMat(wm);
+    //     ReadKaldiObject(rnnlm_lm_rxfilename_, &rnnlm);
+    //     rnnlm_lm_fst_ = fst::ReadAndPrepareLmFst(rnnlm_lm_fst_rxfilename_);
+    //     Matrix<BaseFloat> feature_embedding_mat;
+    //     ReadKaldiObject(rnnlm_feat_embedding_rxfilename_, &feature_embedding_mat);
+    //     SparseMatrix<BaseFloat> word_feature_mat;
+    //     {
+    //        Input input(rnnlm_word_feats_rxfilename_);
+    //        int32 feature_dim = feature_embedding_mat.NumRows();
+    //        rnnlm::ReadSparseWordFeatures(input.Stream(), feature_dim,
+    //                          &word_feature_mat);
+    //     }
+    //     Matrix<BaseFloat> wm(word_feature_mat.NumRows(), feature_embedding_mat.NumCols());
+    //     wm.AddSmatMat(1.0, word_feature_mat, kNoTrans,
+    //                   feature_embedding_mat, 0.0);
+    //     word_embedding_mat.Resize(wm.NumRows(), wm.NumCols(), kUndefined);
+    //     word_embedding_mat.CopyFromMat(wm);
 
-        ReadConfigFromFile(rnnlm_config_rxfilename_, &rnnlm_compute_opts);
+    //     ReadConfigFromFile(rnnlm_config_rxfilename_, &rnnlm_compute_opts);
 
-    } else if (stat(carpa_rxfilename_.c_str(), &buffer) == 0) {
+    // } else if (stat(carpa_rxfilename_.c_str(), &buffer) == 0) {
 
-        KALDI_LOG << "Loading CARPA model from " << carpa_rxfilename_;
-        std_lm_fst_ = fst::ReadFstKaldi(std_fst_rxfilename_);
-        fst::Project(std_lm_fst_, fst::ProjectType::PROJECT_OUTPUT) ;
-        if (std_lm_fst_->Properties(fst::kILabelSorted, true) == 0) {
-            fst::ILabelCompare<fst::StdArc> ilabel_comp;
-            fst::ArcSort(std_lm_fst_, ilabel_comp);
-        }
-        ReadKaldiObject(carpa_rxfilename_, &const_arpa_);
-    }
+    //     KALDI_LOG << "Loading CARPA model from " << carpa_rxfilename_;
+    //     std_lm_fst_ = fst::ReadFstKaldi(std_fst_rxfilename_);
+    //     fst::Project(std_lm_fst_, fst::ProjectType::PROJECT_OUTPUT) ;
+    //     if (std_lm_fst_->Properties(fst::kILabelSorted, true) == 0) {
+    //         fst::ILabelCompare<fst::StdArc> ilabel_comp;
+    //         fst::ArcSort(std_lm_fst_, ilabel_comp);
+    //     }
+    //     ReadKaldiObject(carpa_rxfilename_, &const_arpa_);
+    // }
 }
 
 void Model::Ref() 

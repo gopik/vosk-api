@@ -10,16 +10,19 @@ const string EMPTY = "";
 
 KaldiGmmRecognizer::KaldiGmmRecognizer(Model *model, float sample_frequency):
     model_(model),
+    max_alternatives_(10),
+    gmm_models_(model->gmm_decode_config_),
     sample_frequency_(sample_frequency) {
-        model_->Ref();
-
-        decoder_.reset(new SingleUtteranceGmmDecoder(
-                model_->gmm_decode_config_,
-                OnlineGmmDecodingModels(model_->gmm_decode_config_),
-                *pipeline_,
-                *model_->hclg_fst_,
-                adaptation_state_));
+    
+    model_->Ref();
     pipeline_.reset(new OnlineFeaturePipeline(OnlineFeaturePipelineConfig(model_->gmm_pipeline_config_)));
+    decoder_.reset(new SingleUtteranceGmmDecoder(
+            model_->gmm_decode_config_,
+            gmm_models_,
+            *pipeline_,
+            *model_->hclg_fst_,
+            adaptation_state_));
+    state_ = RECOGNIZER_INITIALIZED;
 }
 
 KaldiGmmRecognizer::~KaldiGmmRecognizer() {
@@ -55,7 +58,7 @@ bool KaldiGmmRecognizer::AcceptWaveform(Vector<BaseFloat> &wdata)
     }
     state_ = RECOGNIZER_RUNNING;
 
-    int step = static_cast<int>(sample_frequency_ * 0.2);
+    int step = static_cast<int>(sample_frequency_ * 0.05);
     for (int i = 0; i < wdata.Dim(); i+= step) {
         SubVector<BaseFloat> r = wdata.Range(i, std::min(step, wdata.Dim() - i));
         decoder_->FeaturePipeline().AcceptWaveform(sample_frequency_, r);
@@ -74,15 +77,15 @@ void KaldiGmmRecognizer::CleanUp() {
     if (state_ == RECOGNIZER_FINALIZED) {
         samples_processed_ = 0;
         decoder_.reset(new SingleUtteranceGmmDecoder(
-                decode_config_,
-                OnlineGmmDecodingModels(decode_config_),
+                model_->gmm_decode_config_,
+                OnlineGmmDecodingModels(model_->gmm_decode_config_),
                 *pipeline_,
                 *model_->hclg_fst_,
                 adaptation_state_));
     }
 }
 
-const char * KaldiGmmRecognizer::Result() {
+const char * KaldiGmmRecognizer::GetResult() {
     CompactLattice clat;
     bool end_of_utterance = true;
     bool rescore_if_needed = true;

@@ -9,6 +9,7 @@ HAVE_OPENBLAS_CLAPACK=0
 HAVE_ACCELERATE=0
 EXTRA_CFLGAS?=
 EXTRA_LDFLAGS?=
+HAVE_MKL=1
 
 VOSK_SOURCES= \
     json.cc \
@@ -44,6 +45,11 @@ LIBS= \
 	$(OPENFST_ROOT)/lib/libfstngram.a
 
 
+ifeq ($(HAVE_MKL), 1)
+CFLAGS+=-I/opt/intel/mkl/include
+LIBS+=-L/opt/intel/mkl/lib/intel64 -Wl,-rpath=/opt/intel/mkl/lib/intel64 -l:libmkl_intel_lp64.so -l:libmkl_core.so -l:libmkl_sequential.so -ldl -lpthread -lm
+endif
+
 ifeq ($(HAVE_OPENBLAS_CLAPACK), 1)
 LIBS += \
 	$(OPENBLAS_ROOT)/lib/libopenblas.a \
@@ -72,3 +78,6 @@ libvosk.$(EXT): $(VOSK_SOURCES:.cc=.o)
 
 clean:
 	rm -f *.o *.so *.dll
+
+bin: main.cc libvosk.$(EXT)
+	$(CXX)  $(CFLAGS) $^ $(KALDI_ROOT)/src/nnet3/kaldi-nnet3.a  -lm -latomic $(EXTRA_LDFLAGS) 

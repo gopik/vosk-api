@@ -19,16 +19,16 @@ class KaldiGmmRecognizer: KaldiRecognizerBase {
         bool AcceptWaveform(const short *sdata, int len);
         bool AcceptWaveform(const float *fdata, int len);
         bool AcceptWaveform(Vector<BaseFloat> &wdata);
-        const char * Result();
+        const char * Result() {return PartialResult();};
         const char * FinalResult();
         const char * PartialResult();
         void Reset();
         ~KaldiGmmRecognizer();
 
-    private:
+    // private:
         const char * GetResult();
         void CleanUp();
-        OnlineGmmDecodingConfig decode_config_;
+        OnlineGmmDecodingModels gmm_models_;
         OnlineGmmAdaptationState adaptation_state_;
         OnlineTimingStats timing_stats_;
         unique_ptr<OnlineFeaturePipeline> pipeline_;

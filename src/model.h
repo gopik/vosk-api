@@ -23,6 +23,7 @@
 #include "online2/online-endpoint.h"
 #include "online2/online-nnet3-decoding.h"
 #include "online2/online-feature-pipeline.h"
+#include "online2/online-gmm-decoding.h"
 #include "lat/lattice-functions.h"
 #include "lat/sausages.h"
 #include "lat/word-align-lattice.h"
@@ -31,6 +32,7 @@
 #include "nnet3/nnet-utils.h"
 #include "rnnlm/rnnlm-utils.h"
 #include "rnnlm/rnnlm-lattice-rescoring.h"
+
 
 using namespace kaldi;
 using namespace std;
@@ -46,7 +48,7 @@ public:
     void Unref();
     int FindWord(const char *word);
 
-protected:
+// protected:
     ~Model();
     void ConfigureV1();
     void ConfigureV2();
